@@ -86,8 +86,11 @@ class GiftCampaignController extends Controller
         }
         foreach($giftCampaign->itemCarts as $itemCart) {
             $giftItem = GiftItem::firstOrFail()->where('id', '=', $itemCart->id)->first();
-            $giftItem->unit_owned -= $itemCart->pivot->amount;
-            $giftItem->save();
+            if ($giftItem->unit_owned >= $itemCart->pivot->amount){
+                $giftItem->unit_owned -= $itemCart->pivot->amount;
+                $giftItem->save();
+            }
+            return back()->with('success', 'All Out Of Gift Items For This Box');
         };
         $giftCampaign->subscribers()->attach(auth()->id());
         return back();
